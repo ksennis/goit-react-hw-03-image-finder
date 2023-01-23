@@ -11,7 +11,7 @@ export const ImageGallery = ({ items, onSelectPost }) => {
     )
 }
 
-Searchbar.propTypes = {
+ImageGallery.propTypes = {
     items: PropTypes.arrayOf(PropTypes.shape({
         id: PropTypes.number.isRequired,
         webformatURL: PropTypes.string.isRequired,
