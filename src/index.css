@@ -172,7 +172,7 @@ img {
 }
 
 .modal {
-  max-width: calc(100vw - 48px);
+  max-width: 800px;
   max-height: calc(100vh - 24px);
 }
 
@@ -210,5 +210,5 @@ img {
 }
 
 .preloader {
-  margin: 100px auto 0;
+  margin: 10px auto 0;
 }

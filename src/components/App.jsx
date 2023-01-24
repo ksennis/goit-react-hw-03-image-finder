@@ -17,9 +17,7 @@ export class App extends Component {
   }
 
   fetchImages(imageDescription, page) {
-    if (page === 1) {
-      this.setState({ isLoading: true });
-    }
+    this.setState({ isLoading: true });
 
     axios.get(`https://pixabay.com/api/?q=${imageDescription}&page=${page}&key=31628127-262f2d43a2a151032d1eaa569&image_type=photo&orientation=horizontal&per_page=12`)
       .then(response => {
@@ -74,10 +72,8 @@ export class App extends Component {
       <div className="App">
         <Searchbar onSubmit={this.onSubmit} />
         
-        { isLoading
-          ? <Loader />
-          : <ImageGallery items={posts} onSelectPost={this.onSelectPost} />
-        }
+        <ImageGallery items={posts} onSelectPost={this.onSelectPost} />
+        { isLoading && <Loader /> }
 
         {(!!page && !isLoading) && (
           <div className="loadMoreButton">
