@@ -1,11 +1,11 @@
 import { Component } from "react";
-import axios from 'axios';
 
 import { Searchbar } from "./Searchbar";
 import { ImageGallery } from "./ImageGallery";
 import { Button } from "./Button";
 import { Modal } from "./Modal";
 import { Loader } from "./Loader";
+import {fetchImages} from "services/eventsApp.services"
 
 export class App extends Component {
   state = {
@@ -14,20 +14,6 @@ export class App extends Component {
     imageDescription: '',
     isLoading: false,
     selectedPost: null
-  }
-
-  fetchImages(imageDescription, page) {
-    this.setState({ isLoading: true });
-
-    axios.get(`https://pixabay.com/api/?q=${imageDescription}&page=${page}&key=31628127-262f2d43a2a151032d1eaa569&image_type=photo&orientation=horizontal&per_page=12`)
-      .then(response => {
-        const updatedPosts = this.state.posts.concat(response.data.hits);
-
-        this.setState({ posts: updatedPosts });
-      })
-      .finally(() => {
-        this.setState({ isLoading: false });
-      });
   }
   
   onSubmit = evt => {
@@ -41,16 +27,36 @@ export class App extends Component {
       imageDescription,
       posts: []
     });
-
-    this.fetchImages(imageDescription, page);
   }
 
   onClickLoadMore = () => {
     const nextPage = this.state.page + 1;
 
     this.setState({ page: nextPage });
+  }
 
-    this.fetchImages(this.state.imageDescription, nextPage);
+  filterPostsData = (originalPosts) => {
+    return originalPosts.map((post) => ({
+      id: post.id,
+      webformatURL: post.webformatURL,
+      largeImageURL: post.largeImageURL
+    }))
+  }
+
+  componentDidUpdate (_, prevState) {
+    const { imageDescription, page, posts } = this.state;
+
+    if (imageDescription !== prevState.imageDescription || page !== prevState.page) {
+      fetchImages(imageDescription, page)
+      .then(response => {
+        const updatedPosts = posts.concat(this.filterPostsData(response.data.hits));
+  
+        this.setState({ posts: updatedPosts });
+      })
+      .finally(() => {
+        this.setState({ isLoading: false });
+      });
+    }
   }
 
   onSelectPost = (postData) => {
@@ -72,12 +78,14 @@ export class App extends Component {
       <div className="App">
         <Searchbar onSubmit={this.onSubmit} />
         
-        <ImageGallery items={posts} onSelectPost={this.onSelectPost} />
+        {!!posts.length && <ImageGallery items={posts} onSelectPost={this.onSelectPost} />}
         { isLoading && <Loader /> }
 
         {(!!page && !isLoading) && (
           <div className="loadMoreButton">
-            <Button onClick={this.onClickLoadMore}>Load More</Button>
+            <Button onClick={this.onClickLoadMore}>
+              Load More
+            </Button>
           </div>
         )}
 
