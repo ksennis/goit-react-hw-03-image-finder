@@ -47,6 +47,8 @@ export class App extends Component {
     const { imageDescription, page, posts } = this.state;
 
     if (imageDescription !== prevState.imageDescription || page !== prevState.page) {
+      this.setState({ isLoading: true });
+
       fetchImages(imageDescription, page)
       .then(response => {
         const updatedPosts = posts.concat(this.filterPostsData(response.data.hits));
